@@ -11,26 +11,25 @@ const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-// ROUTE
+// ROUTE: POST /generate
 app.post("/generate", async (req, res) => {
   try {
     const prompt = req.body.prompt;
 
-    const response = await client.images.generate({
+    const result = await client.images.generate({
       model: "gpt-image-1",
       prompt: prompt,
-      size: "1024x1024"
+      size: "1024x1024",
     });
 
-    res.send(response.data[0].url);
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Error generating image");
+    res.json({ image: result.data[0].url });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: error.message });
   }
 });
 
-// RENDER PORT
+// PORT for Render
 const port = process.env.PORT || 10000;
-app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
-});
+app.listen(port, () => console.log("Server running on port " + port));
+
